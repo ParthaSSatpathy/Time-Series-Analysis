@@ -1,0 +1,151 @@
+---
+title: "Time Series Analysis Concepts"
+author: "Partha S Satpathy"
+date: "March 24, 2017"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#Import Data
+```{r Import Data}
+##Read the file from local directory
+##File is present in my github directory
+x <- read.delim("C:/Users/parth/Desktop/RProjects/Time-Series-Analysis/DK-data/Nile.dat",header = T)
+##Rename the column name of x for convinience
+names(x) <- "data"
+
+##Convert the data into Time Series format
+Nile <- ts(x$data,start=c(1871),end=c(1970),frequency = 1)
+
+##Print the data
+print(Nile)
+# List the number of observations in the Nile dataset
+length(Nile)
+
+# Display the first 10 elements of the Nile dataset
+head(Nile,10)
+
+# Display the last 12 elements of the Nile dataset
+tail(Nile,12)
+```
+
+## Basic plots of time series data
+
+
+```{r plots, echo=TRUE}
+# Plot the Nile data
+plot(Nile)
+
+# Plot the Nile data with xlab and ylab arguments
+plot(Nile, xlab = "Year", ylab = "River Volume (1e9 m^{3})")
+
+# Plot the Nile data with xlab, ylab, main, and type arguments
+plot(Nile, xlab = "Year", ylab = "River Volume (1e9 m^{3})",main="Annual River Nile Volume at Aswan, 1871-1970",type="b")
+
+```
+
+##Sampling frequency
+
+```{r Sampl Freq,echo=TRUE}
+# The start() and end() functions return the time index of the first and last observations, respectively. The time() function calculates a vector of time indices, with one element for each time index on which the series was observed.
+# 
+# The deltat() function returns the fixed time interval between observations and the frequency() function returns the number of observations per unit time. Finally, the cycle() function returns the position in the cycle of each observation.
+
+data("AirPassengers")
+print(AirPassengers)
+
+# Plot AirPassengers
+plot(AirPassengers)
+
+# View the start and end dates of AirPassengers
+start(AirPassengers)
+end(AirPassengers)
+
+# Use time(), deltat(), frequency(), and cycle() with AirPassengers 
+time(AirPassengers)
+deltat(AirPassengers)
+frequency(AirPassengers)
+cycle(AirPassengers)
+
+###################Missing Values in Time Series Data################
+AirPassengers2 <- AirPassengers
+AirPassengers2[85:96] <- NA
+AirPassengers2
+
+# Plot the AirPassengers data
+plot(AirPassengers2)
+
+# Compute the mean of AirPassengers
+mean(AirPassengers2)
+
+# Impute mean values to NA in AirPassengers
+AirPassengers2[85:96] <- mean(AirPassengers, na.rm = T)
+
+# Generate another plot of AirPassengers
+plot(AirPassengers2)
+
+# Add the complete AirPassengers data to your plot
+#rm(AirPassengers)
+points(AirPassengers, type = "l", col = 2, lty = 3)
+
+
+```
+
+##Basic Time Series Objects
+
+```{r Objects,echo=TRUE}
+data_vector <- c(2.05,4.29,3.32,3.508,0.009,1.921,0.7978,0.2999,-0.4,.885,-1.51,-2.28,-1.88,-2.72,-2.1,-0.01)
+
+# Use print() and plot() to view data_vector
+print(data_vector)
+plot(data_vector)
+
+# Convert data_vector to a ts object with start = 2004 and frequency = 4
+time_series <- ts(data_vector,start=2004,frequency=4)
+
+# Use print() and plot() to view time_series
+print(time_series)
+plot(time_series)
+  
+##is.ta is used to check if an object is a time series object or not
+# Check whether data_vector and time_series are ts objects
+is.ts(data_vector)
+is.ts(time_series)
+
+# Check whether Nile is a ts object
+is.ts(Nile)
+
+# Check whether AirPassengers is a ts object
+is.ts(AirPassengers)
+
+
+```
+
+##EuStockMarkets Data Analysis
+```{r EU Stock Data, echo=TRUE}
+# This dataset contains daily closing prices of major European stock indices from 1991-1998, specifically, from Germany (DAX), Switzerland (SMI), France (CAC), and the UK (FTSE).
+
+# Check whether EuStockMarkets is a ts object
+is.ts(EuStockMarkets)
+
+# View the start, end, and frequency of EuStockMarkets
+start(EuStockMarkets)
+end(EuStockMarkets)
+frequency(EuStockMarkets)
+
+# Generate a simple plot of EuStockMarkets
+plot(EuStockMarkets)
+
+# Use ts.plot with EuStockMarkets
+ts.plot(EuStockMarkets, col = 1:4, xlab = "Year", ylab = "Index Value", main = "Major European Stock Indices, 1991-1998")
+
+# Add a legend to the ts.plot
+legend("topleft", colnames(EuStockMarkets), lty = 1, col = 1:4, bty = "n")
+
+
+```
+
