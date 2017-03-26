@@ -148,4 +148,663 @@ legend("topleft", colnames(EuStockMarkets), lty = 1, col = 1:4, bty = "n")
 
 
 ```
+##Trend Spotting
+
+```{r trend, echo=TRUE}
+# The logarithmic function log() is a data transformation that can be applied to positively valued time series data. It slightly shrinks observations that are greater than one towards zero, while greatly shrinking very large observations. This property can stabilize variability when a series exhibits increasing variability over time. It may also be used to linearize a rapid growth pattern over time.
+
+rapid_growth <- c(505.9547,	447.3556,	542.5831,	516.0634,	506.9599,	535.0162,	496.9291,
+                  497.5626,	577.2483,	536.856,	541.2459,	473.4978,	550.989,	569.4106, 
+                  522.9152,	487.2002,	594.6108,	591.174,	615.9868,	621.3175,	607.125, 
+                  587.0367,	554.1554,	644.1172,	509.7,	607.0943,	603.5512,	613.6216, 
+                  544.9143,	670.8118,	687.1316,	615.5817,	711.1873,	694.2979,	681.9293, 
+                  659.1403,	642.7021,	601.5301,	666.7623,	650.9657,	606.0913,	696.6788,
+                  641.6025,	855.7719,	667.3291,	573.4914,	791.7333,	751.5914,	610.7948, 
+                  624.6503,	833.299,	639.8867,	736.8283,	772.2923,	686.8865,	667.7631, 
+                  712.9415,	918.1838,	656.1089,	700.4972,	683.4933,	781.738,	715.6843, 
+                  808.2875,	820.7795,	656.8856,	733.34,	773.5387,	641.2027,	932.2119, 
+                  680.6766,	988.2828,	664.8986,	813.5283,	883.4088,	924.2749,	969.4321, 
+                  777.3293,	880.9984,	971.3583,	902.9584,	1020.7457,	1075.1483,	886.1707, 
+                  889.6322,	950.3908,	878.0395,	1043.7676,	901.109,	1079.6584,	933.9054, 
+                  921.9433,	870.8071,	811.1398,	1004.2677,	1008.1758,	1189.4893,	751.9706, 
+                  947.4753,	886.5153,	1074.8943,	1101.1307,	1130.1855,	975.8495,	948.161, 
+                  1177.8227,	1227.1271,	976.9957,	836.7089,	1323.6047,	852.3532,	1200.8262, 
+                  1274.4788,	1349.2614,	1102.6334,	1324.8566,	1268.7187,	1058.2289,	1204.0872, 
+                  1084.6503,	1284.4305,	1195.2843,	1058.4262,	1188.0577,	1166.5934,	1064.6946, 
+                  1429.0685,	1070.8528,	1539.3305,	1467.1571,	1127.7058,	1296.0717,	1555.2741, 
+                  1332.9037,	1315.4236,	1189.2462,	1482.4339,	1240.9287,	1237.772,	1468.6083, 
+                  1328.5457,	1589.5078,	1373.163,	1503.5563,	1659.9376,	1704.6137,	1550.4638, 
+                  1625.8026,	1873.8582,	1370.6209,	1439.7114,	1447.4369,	1579.9158,	1681.2571, 
+                  1661.6059,	1311.8468,	1326.0308,	1323.0995,	1550.4863,	1606.2042,	1768.5401, 
+                  1509.8368,	1592.1086,	1627.6188,	1544.6329,	1439.5234,	1682.3518,	1850.7097, 
+                  1673.3801,	1832.4272,	1672.2672,	1781.5768,	1659.2899,	1970.0389,	2044.7124, 
+                  1929.0902,	1891.7042,	1487.1577,	2013.8722,	1796.7886,	1977.0183,	1516.9552, 
+                  1650.6039,	1523.2834,	1696.6181,	1627.2609,	1787.2968,	1567.2874,	1881.9963, 
+                  2318.9833,	1941.9879,	1820.2797,	2154.8123,	2261.5471,	2052.2214,	2079.171, 
+                  2010.0609,	2145.2606,	1775.3008,	2013.407)
+
+plot(rapid_growth,type = "l")
+
+# Log rapid_growth
+linear_growth <- log(rapid_growth)
+  
+# Plot linear_growth using ts.plot()
+ plot(linear_growth,type="l")
+
+######Removing linear trend from a time series data####
+ z <- c(6.226447,	6.103354,	6.296341,	6.24623,	6.228432,	6.282297,	6.208447,	6.209721,
+       6.358273,	6.28573,	6.293874,	6.160147,	6.311715,	6.344602,	6.259419,	6.188675,
+       6.387907,	6.38211,	6.423225,	6.431842,	6.408735,	6.375087,	6.317445,	6.467881, 
+       6.233822,	6.408684,	6.402831,	6.419378,	6.300629,	6.508489,	6.532526,	6.422568, 
+       6.566936,	6.542901,	6.524926,	6.490936,	6.465681,	6.399477,	6.502434,	6.478457, 
+       6.407031,	6.546325,	6.463969,	6.752004,	6.503283,	6.351743,	6.674225,	6.622193, 
+       6.414761,	6.437192,	6.725393,	6.461291,	6.602355,	6.649363,	6.532169,	6.503933, 
+       6.569399,	6.822398,	6.486327,	6.55179,	6.527217,	6.66152,	6.573239,	6.694918,
+       6.710255,	6.48751,	6.597609,	6.650976,	6.463346,	6.83756,	6.523087,	6.895969, 
+       6.499635,	6.701381,	6.783788,	6.82901,	6.87671,	6.655864,	6.781056,	6.878695, 
+       6.805677,	6.928289,	6.980214,	6.78691,	6.790808,	6.856873,	6.777692,	6.950592, 
+       6.803626,	6.9844,	6.839375,	6.826484,	6.76942,	6.69844,	6.912014,	6.915898, 
+       7.081279,	6.622697,	6.853801,	6.787298,	6.979978,	7.004093,	7.030137,	6.883308, 
+       6.854524,	7.071423,	7.112431,	6.884482,	6.729476,	7.188114,	6.748001,	7.090765, 
+       7.150293,	7.207313,	7.005457,	7.18906,	7.145763,	6.964352,	7.093477,	6.989013, 
+       7.158071,	7.086139,	6.964538,	7.080075,	7.061843,	6.970443,	7.264778,	6.976211, 
+       7.339103,	7.291082,	7.027941,	7.167093,	7.349407,	7.195115,	7.181914,	7.081075, 
+       7.301441,	7.123615,	7.121068,	7.292071,	7.19184,	7.37118,	7.224872,	7.315588, 
+       7.414535,	7.441094,	7.346309,	7.393757,	7.535755,	7.223019,	7.272198,	7.27755, 
+       7.365127,	7.427297,	7.41554,	7.179191,	7.189945,	7.187732,	7.346324,	7.381629, 
+       7.47791,	7.319757,	7.372815,	7.394873,	7.342542,	7.272067,	7.427948,	7.523324, 
+       7.422601,	7.513397,	7.421936,	7.485254,	7.414145,	7.585809,	7.623012,	7.564804, 
+       7.545233,	7.304622,	7.607815,	7.493756,	7.589345,	7.32446,	7.408897,	7.328623, 
+       7.436392,	7.394653,	7.48846,	7.357102,	7.540088,	7.748884,	7.571467,	7.506745, 
+       7.675459,	7.723804,	7.626678,	7.639725,	7.60592,	7.671016,	7.481725,	7.607584)
+ ts.plot(z)
+ 
+ # Differencing a time series can remove a time trend. The function diff() will calculate the first difference or change series. A difference series lets you examine the increments or changes in a given time series. It always has one fewer observations than the original series.
+ 
+ # Generate the first difference of z
+dz <- diff(z)
+  
+# Plot dz
+ts.plot(dz)
+
+# View the length of z and dz, respectively
+length(z)
+length(dz)
+
+###############Removing Seasonal Trends######################################
+
+x <- c(-4.198033,	9.569009,	5.175143,	-9.691646,	-3.215294,	10.843669, 
+       6.452159,	-10.833559,	-2.235351,	10.119833,	6.579646,	-8.656565, 
+       -2.515001,	9.837434,	7.386194,	-8.243504,	-4.264033,	8.898861, 
+       8.544336,	-8.066913,	-4.023025,	9.822679,	7.772852,	-6.587777, 
+       -3.459171,	10.613851,	7.37445,	-5.798715,	-1.204711,	11.429236, 
+       7.570047,	-4.968384,	-2.003787,	11.941348,	9.406672,	-4.396585, 
+       -1.555579,	12.599877,	8.502916,	-3.728968,	-2.827,	13.375981, 
+       8.128941,	-3.149249,	-2.799473,	13.71057,	6.755217,	-3.779744, 
+       -3.768274,	13.625336,	6.537931,	-3.249098,	-5.024191,	13.355373, 
+       6.931161,	-3.527354,	-5.197329,	11.579791,	7.162449,	-1.894607, 
+       -5.777797,	12.482695,	6.208088,	-3.434038,	-7.080721,	11.413656, 
+       6.74199,	-3.532376,	-8.393542,	12.507261,	6.473175,	-3.745246, 
+       -9.426209,	12.380817,	8.048243,	-2.831528,	-7.301893,	12.765838, 
+       8.223699,	-4.448131,	-6.963558,	12.034005,	7.574925,	-5.402218, 
+       -6.568198,	10.896482,	7.276571,	-4.037873,	-6.723013,	12.180815, 
+       8.285162,	-4.159342,	-6.36067,	12.753018,	8.665912,	-5.440538, 
+       -4.874932,	12.600197,	8.162589,	-6.539572)
+# 
+# For time series exhibiting seasonal trends, seasonal differencing can be applied to remove these periodic patterns. For example, monthly data may exhibit a strong twelve month pattern. In such situations, changes in behavior from year to year may be of more interest than changes from month to month, which may largely follow the overall seasonal pattern.
+
+#The function diff(..., lag = s) will calculate the lag s difference or length s seasonal change series. For monthly or quarterly data, an appropriate value of s would be 12 or 4, respectively. The diff() function has lag = 1 as its default for first differencing. Similar to before, a seasonally differenced series will have s fewer observations than the original series.
+
+ts.plot(x)
+
+# Generate a diff of x with lag = 4. Save this to dx
+dx <- diff(x,lag=4)
+  
+# Plot dx
+ts.plot(dx)  
+
+# View the length of x and dx, respectively 
+length(x)
+length(dx)
+
+```
+
+##White Noise Model
+```{r WNoise,echo=TRUE}
+#A white noise is a time series with constant mean and variance.
+##That means there is no linear or any other trend in data.
+#The arima.sim() function can be used to simulate data from a variety of time series models. ARIMA is an abbreviation for the autoregressive integrated moving average.
+#An ARIMA(p, d, q) model has three parts, the autoregressive order p, the order of integration (or differencing) d, and the moving average order q.
+
+# Simulate a WN model with list(order = c(0, 0, 0))
+white_noise <- arima.sim(model = list(order=c(0,0,0)), n = 100)
+
+# Plot your white_noise data
+ts.plot(white_noise)
+
+# Simulate from the WN model with: mean = 100, sd = 10
+white_noise_2 <- arima.sim(model = list(order=c(0,0,0)), n = 100, mean = 100, sd = 10)
+
+# Plot your white_noise_2 data
+ts.plot(white_noise_2)
+
+################Fit the Whit eNoise Model#############################
+
+##Data for a WN Model
+y <- ts(c(109.76134,	98.3161,	100.63295,	88.7434,	101.87238,	104.62836,	96.64462, 
+          102.86194,	112.76247,	82.23219,	88.94434,	94.60318,	105.61113,	113.82776, 
+          104.82319,	101.29629,	82.98459,	88.96058,	100.60046,	91.03525,	100.19286, 
+          95.32537,	94.58643,	121.3583,	87.37874,	96.89007,	90.5131,	99.90843, 
+          102.56934,	104.96144,	104.73464,	88.00465,	100.77943,	121.64776,	85.77083, 
+          79.15428,	98.18847,	99.90006,	98.91084,	101.64422,	102.79526,	84.65112, 
+          96.4787,	105.81547,	98.51869,	105.24366,	109.61264,	85.14201,	82.81442, 
+          103.03629,	93.56967,	98.08922,	81.25461,	109.18554,	80.43181,	103.55953, 
+          80.22269,	84.97477,	107.78363,	92.61288,	99.80293,	107.25085,	98.66378, 
+          91.92275,	98.32642,	112.73402,	96.02811,	92.64909,	83.08484,	97.22196, 
+          106.61361,	97.36943,	108.78465,	104.91858,	84.44343,	85.60786,	96.51529, 
+          94.18105,	85.02851,	63.26622,	87.22137,	103.52295,	105.60216,	103.26039, 
+          101.11519,	108.45697,	97.67631,	103.01081,	100.61756,	105.58108,	98.72722, 
+          98.43996,	90.78219,	92.74599,	102.93762,	83.95306,	110.15937,	104.17578, 
+          99.27876,	103.25115),start = 1,end=100,frequency = 1)
+
+ts.plot(y)
+
+#Applying the arima() function returns information or output about the estimated model. For the WN model this includes the estimated mean, labeled intercept, and the estimated variance, labeled sigma^2.
+
+# Fit the WN model to y using the arima command
+arima(y,order=c(0,0,0))
+
+# Calculate the sample mean and sample variance of y and compare with the above data
+mean(y)
+var(y)
+
+```
+
+##Random Walk Model
+
+```{r RWalk,echo=TRUE}
+#The random walk (RW) model is also a basic time series model. It is the cumulative sum (or integration) of a mean zero white noise (WN) series, such that the first difference series of a RW is a WN series.
+# RW model is an ARIMA(0, 1, 0) model, in which the middle entry of 1 indicates that the model's order of integration is 1.
+
+# Generate a RW model using arima.sim
+random_walk <- arima.sim(model = list(order=c(0,1,0)), n = 100)
+
+# Plot random_walk
+ts.plot(random_walk)
+
+# Calculate the first difference series
+random_walk_diff <- diff(random_walk)
+
+# Plot random_walk_diff
+ts.plot(random_walk_diff)
+  
+#A random walk (RW) need not wander about zero, it can have an upward or downward trajectory, i.e., a drift or time trend. This is done by including an intercept in the RW model, which corresponds to the slope of the RW time trend.
+
+# For an alternative formulation, you can take the cumulative sum of a constant mean white noise (WN) series, such that the mean corresponds to the slope of the RW time trend.
+# 
+# To simulate data from the RW model with a drift you again use the arima.sim() function with the model = list(order = c(0, 1, 0)) argument. This time, you should add the additional argument mean = ... to specify the drift variable, or the intercept.
+
+# Generate a RW model with a drift uing arima.sim
+rw_drift <- arima.sim(model = list(order=c(0,1,0)), n = 100, mean = 1)
+
+# Plot rw_drift
+ts.plot(rw_drift)
+
+# Calculate the first difference series
+rw_drift_diff <- diff(rw_drift)
+
+# Plot rw_drift_diff
+ts.plot(rw_drift_diff)
+
+#####################Estimate the Random Walk Model##########################
+# For a given time series y we can fit the random walk model with a drift by first differencing the data, then fitting the white noise (WN) model to the differenced data using the arima() command with the order = c(0, 0, 0)) argument.
+# 
+# The arima() command displays information or output about the fitted model. Under the Coefficients: heading is the estimated drift variable, named the intercept. Its approximate standard error (or s.e.) is provided directly below it. The variance of the WN part of the model is also estimated under the label sigma^2.
+
+
+##Time Series Random Walk Data
+random_walk2 <- ts(c(0.00,	0.8407997,	0.6374594,	0.7579217,	0.5118742,	0.1137669, 
+                     0.2789728,	0.2775946,	0.6030589,	2.9120963,	3.1819914,	2.5515731, 
+                     3.267562,	4.9997993,	7.109158,	8.0107086,	8.2377246,	8.7015723, 
+                     9.051261,	13.3200714,	12.1675754,	11.5324303,	12.2601005,	12.5767819, 
+                     12.6632633,	12.725668,	13.1994837,	12.8396495,	13.5061941,	15.4816848, 
+                     16.1771077,	16.8365295,	16.6163362,	16.1808337,	16.966266,	16.7270308, 
+                     17.6561798,	20.8901637,	20.0567603,	22.4168557,	23.1628256,	22.9168362, 
+                     21.9326982,	22.6547467,	23.6325743,	24.8637728,	25.5358779,	27.2225699, 
+                     27.3721605,	29.0197579,	30.8698419,	32.4859913,	33.1883373,	33.7998279, 
+                     32.7718376,	33.3293449,	36.016805,	36.4458501,	38.2388467,	39.1157217, 
+                     38.7992108,	39.2275168,	37.5690113,	40.0882063,	40.5380769,	40.7578637, 
+                     41.5757014,	41.1067984,	41.106456,	40.645532,	39.5554851,	40.4312198, 
+                     41.9604182,	43.6866496,	45.2350442,	45.9024582,	47.5404571,	49.0971826, 
+                     48.9170239,	48.0796343,	46.7765324,	47.9775098,	46.4334193,	45.9453639, 
+                     47.0727461,	47.1890042,	51.2925271,	52.1247377,	51.3796798,	52.1270458, 
+                     51.2230171,	52.6301981,	52.4262449,	51.3564739,	52.2017866,	53.381725, 
+                     55.0244438,	55.930359,	55.5117188,	58.3080319,	58.1183345),start=0,end = 100,frequency = 1)
+ts.plot(random_walk2)
+
+# Difference your random_walk data
+rw_diff <- diff(random_walk2)
+
+# Plot rw_diff
+ts.plot(rw_diff)
+
+# Now fit the WN model to the differenced data
+model_wn <-arima(rw_diff,c(0,0,0))
+
+# Store the value of the estimated time trend (intercept)
+int_wn <- model_wn$coef
+
+# Plot the original random_walk data
+ts.plot(random_walk2)
+
+# Use abline(0, ...) to add time trend to the figure
+abline(0,int_wn)
+
+
+```
+
+##Are the white noise model or the random walk model stationary?
+```{r Stationary,echo=TRUE}
+##The white noise (WN) and random walk (RW) models are very closely related. However, only the RW is always non-stationary, both with and without a drift term.
+##if we start with a mean zero WN process and compute its running or cumulative sum, the result is a RW process. The cumsum() function will make this transformation for you. Similarly, if we create a WN process, but change its mean from zero, and then compute its cumulative sum, the result is a RW process with a drift.
+
+# Use arima.sim() to generate WN data
+white_noise <- arima.sim(model=list(order=c(0,0,0)),n=100)
+
+# Use cumsum() to convert your WN data to RW
+random_walk <- cumsum(white_noise)
+  
+# Use arima.sim() to generate WN drift data
+wn_drift <- arima.sim(model=list(order=c(0,0,0)),n=100,mean=0.4)
+  
+# Use cumsum() to convert your WN drift data to RW
+rw_drift <- cumsum(wn_drift)
+
+# Plot all four data objects
+plot.ts(cbind(white_noise, random_walk, wn_drift, rw_drift))
+
+```
+
+##Asset prices vs Asset Returns
+```{r Asset,echo=TRUE}
+# The goal of investing is to make a profit. The revenue or loss from investing depends on the amount invested and changes in prices, and high revenue relative to the size of an investment is of central interest. This is what financial asset returns measure, changes in price as a fraction of the initial price over a given time horizon, for example, one business day.
+# 
+# Let's again consider the EuStockMarkets dataset. This dataset reports index values, which we can regard as prices. The indices are not investable assets themselves, but there are many investable financial assets that closely track major market indices, including mutual funds and exchange traded funds.
+# 
+# Log returns, also called continuously compounded returns, are also commonly used in financial time series analysis. They are the log of gross returns, or equivalently, the changes (or first differences) in the logarithm of prices.
+# 
+# The change in appearance between daily prices and daily returns is typically substantial, while the difference between daily returns and log returns is usually small. As you'll see later, one advantage of using log returns is that calculating multi-period returns from individual periods is greatly simplified - you just add them together!
+
+
+# Plot EuStockMarkets
+plot(EuStockMarkets)
+
+# Use this code to convert prices to returns
+returns <- EuStockMarkets[-1,] / EuStockMarkets[-1860,] - 1
+
+# Convert returns to ts
+returns <- ts(returns, start = c(1991, 130), frequency = 260)
+
+# Plot returns
+plot(returns)
+
+# Use this code to convert prices to log returns
+logreturns <- diff(log(EuStockMarkets))
+
+# Plot logreturns
+plot(logreturns)
+
+```
+
+##Characteristics of Financial time series
+```{r finTS,echo=TRUE}
+
+# Daily financial asset returns typically share many characteristics. Returns over one day are typically small, and their average is close to zero. At the same time, their variances and standard deviations can be relatively large. Over the course of a few years, several very large returns (in magnitude) are typically observed. These relative outliers happen on only a handful of days, but they account for the most substantial movements in asset prices. Because of these extreme returns, the distribution of daily asset returns is not normal, but heavy-tailed, and sometimes skewed. In general, individual stock returns typically have even greater variability and more extreme observations than index returns.
+# 
+# the eu_percentreturns dataset, is the percentage returns calculated from your EuStockMarkets data. For each of the four indices contained in your data, we'll calculate the sample mean, variance, and standard deviation.
+# 
+# Notice that the average daily return is about 0, while the standard deviation is about 1 percentage point. Also apply the hist() and qqnorm() functions to make histograms and normal quantile plots, respectively, for each of the indices
+
+eu_percentreturns <- (EuStockMarkets[-1,] / EuStockMarkets[-1860,] - 1)*100
+eu_percentreturns <- ts(returns, start = c(1991, 130), frequency = 260)
+
+# Generate means from eu_percentreturns
+colMeans(eu_percentreturns)
+
+# Use apply to calculate sample variance from eu_percentreturns
+apply(eu_percentreturns, MARGIN = 2, FUN = var)
+
+# Use apply to calculate standard deviation from eu_percentreturns
+apply(eu_percentreturns, MARGIN = 2, FUN = sd)
+
+# Display a histogram of percent returns for each index
+par(mfrow = c(2,2))
+apply(eu_percentreturns, MARGIN = 2, FUN = hist, main = "", xlab = "Percentage Return")
+
+# Display normal quantile plots of percent returns for each index
+par(mfrow = c(2,2))
+apply(eu_percentreturns, MARGIN = 2, FUN = qqnorm, main = "")
+qqline(eu_percentreturns)
+
+```
+
+##Plotting Pairs of Data
+```{r Plots,echo=TRUE}
+# Make a scatterplot of DAX and FTSE
+plot(EuStockMarkets[,'DAX'], EuStockMarkets[,'FTSE'])
+
+# Make a scatterplot matrix of EuStockMarkets
+pairs(EuStockMarkets)
+
+# Convert EuStockMarkets to log returns
+logreturns <- diff(log(EuStockMarkets))
+
+# Plot logreturns
+plot(logreturns)
+
+# Make a scatterplot matrix of logreturns
+pairs(logreturns)
+
+```
+
+##Covariance and Correlation
+```{r cov and cor, echo=TRUE}
+# Sample covariances measure the strength of the linear relationship between matched pairs of variables. The cov() function can be used to calculate covariances for a pair of variables, or a covariance matrix when a matrix containing several variables is given as input. For the latter case, the matrix is symmetric with covariances between variables on the off-diagonal and variances of the variables along the diagonal.
+
+# Covariances are very important throughout finance, but they are not scale free and they can be difficult to directly interpret. Correlation is the standardized version of covariance that ranges in value from -1 to 1, where values close to 1 in magnitude indicate a strong linear relationship between pairs of variables. The cor() function can be applied to both pairs of variables as well as a matrix containing several variables, and the output is interpreted analogously.
+
+DAX_logreturns <- logreturns[,1]
+FTSE_logreturns <- logreturns[,4]
+
+# Use cov() with DAX_logreturns and FTSE_logreturns
+cov(DAX_logreturns, FTSE_logreturns)
+
+##Even though the covariace is low, if you plot you can see that there is a relation between the two
+##Thats why we use correlation, which is a standardized format
+plot(DAX_logreturns, FTSE_logreturns)
+
+# Use cov() with logreturns
+cov(logreturns)
+
+# Use cor() with DAX_logreturns and FTSE_logreturns
+cor(DAX_logreturns, FTSE_logreturns)
+
+# Use cor() with logreturns
+cor(logreturns)
+
+```
+##Autocorrelation
+
+```{r Autocorr,echo=TRUE}
+# Autocorrelations or lagged correlations are used to assess whether a time series is dependent on its past. For a time series x of length n we consider the n-1 pairs of observations one time unit apart. The first such pair is (x[2],x[1]), and the next is (x[3],x[2]). Each such pair is of the form (x[t],x[t-1]) where t is the observation index, which we vary from 2 to n in this case. The lag-1 autocorrelation of x can be estimated as the sample correlation of these (x[t], x[t-1]) pairs.
+# 
+# In general, we can manually create these pairs of observations. First, create two vectors, x_t0 and x_t1, each with length n-1, such that the rows correspond to (x[t], x[t-1]) pairs. Then apply the cor() function to estimate the lag-1 autocorrelation.
+# 
+# Luckily, the acf() command provides a shortcut. Applying acf(..., lag.max = 1, plot = FALSE) to a series x automatically calculates the lag-1 autocorrelation.
+# 
+# Finally, note that the two estimates differ slightly as they use slightly different scalings in their calculation of sample covariance, 1/(n-1) versus 1/n. Although the latter would provide a biased estimate, it is preferred in time series analysis, and the resulting autocorrelation estimates only differ by a factor of (n-1)/n.
+
+x<- ts(c(2.06554379,	1.29963803,	0.033578,	-0.34258065,	0.23256126,	0.46812008, 
+         4.34111562,	2.82007636,	2.90799984,	2.33495061,	1.15989954,	0.82008659, 
+         -0.24338927,	-0.03355907,	-1.53548216,	-0.69363797,	-1.41731648,	-0.76623179, 
+         0.8353606,	0.04395345,	1.07447506,	1.5020036,	-0.21238609,	0.32996521, 
+         -0.7503347,	-0.10522038,	0.20471918,	-0.17170595,	0.87181378,	1.47213721, 
+         0.84112591,	0.96430157,	0.66829027,	-0.25752691,	0.08193916,	-1.46057, 
+         -1.2672683,	-2.19329186,	-2.21008902,	0.42338945,	-1.01513893,	-1.54446229, 
+         -0.72524036,	0.70352378,	-0.36108456,	-0.77422092,	-0.50023603,	1.31369378, 
+         1.15621723,	0.68782375,	-0.79475183,	0.32563325,	2.00955556,	1.70614293, 
+         0.9991064,	0.68932712,	0.65764259,	1.51403467,	0.85806413,	1.96951273, 
+         2.98268339,	3.01781322,	1.30009671,	0.71140225,	0.40782908,	-0.53429804, 
+         -0.21147251,	1.72814428,	-0.75541665,	-1.34178777,	-1.72317007,	-2.78147841, 
+         -1.72572507,	-3.49466071,	-2.41789449,	-0.13744248,	-0.1580531,	-0.27865357, 
+         -0.974935,	-1.52666608,	-1.04093146,	-1.26059748,	-1.44067012,	-1.23902633, 
+         -0.44668174,	1.1256287,	3.25518488,	1.13570549,	0.98992411,	0.38244269, 
+         2.71124649,	2.42216865,	1.78509981,	-1.03092109,	-1.06607323,	-2.63465306, 
+         -2.66808169,	-1.30411399,	-1.04269885,	0.4021526,	-0.48928251,	-0.4938147, 
+         -1.08457733,	-0.27456945,	-1.84390881,	-2.09907629,	-1.88923578,	-1.84534263, 
+         -0.33812159,	-1.20911695,	-0.50157701,	-0.58298734,	-1.66575871,	-1.41327839, 
+         -2.55380296,	-0.8689529,	-2.16915012,	-2.60202618,	-2.05678159,	-0.8765411, 
+         1.3291965,	1.07620974,	-0.96432698,	-1.81480027,	-2.05757608,	-2.34353353, 
+         -0.01467163,	0.77321454,	0.03106214,	1.16999559,	2.67732293,	4.57761736, 
+         4.90582958,	4.13300371,	4.04398099,	1.35081333,	0.61429043,	1.42969023, 
+         0.79231154,	1.34178061,	2.22016551,	2.8250229,	2.43279283,	1.89023418, 
+         0.46877402,	-1.30680558,	-1.45910588,	0.2116933,	1.10203354,	1.42360646),start = 1,end = 150,
+       frequency = 1)
+
+
+# Define x_t0 as x[-1]
+x_t0 <- x[-1]
+
+# Define x_t1 as x[-n]
+x_t1 <- x[-150]
+
+# Confirm that x_t0 and x_t1 are (x[t], x[t-1]) pairs  
+head(cbind(x_t0, x_t1))
+  
+# Plot x_t0 and x_t1
+plot(x_t0, x_t1)
+
+# View the correlation between x_t0 and x_t1
+cor(x_t0, x_t1)
+
+# Use acf with x
+acf(x, lag.max = 1, plot = FALSE)
+
+# Confirm that difference factor is (n-1)/n
+n=length(x)
+cor(x_t1, x_t0) * (n-1)/n
+
+# Generate ACF estimates for x up to lag-10
+acf(x, lag.max = 10, plot = FALSE)
+
+# View the ACF of x
+acf(x)
+
+```
+
+##Auto-Regressive Model
+```{r AR Model,echo=TRUE}
+
+# The autoregressive (AR) model is arguably the most widely used time series model. It shares the very familiar interpretation of a simple linear regression, but here each observation is regressed on the previous observation. The AR model also includes the white noise (WN) and random walk (RW) models.
+
+# Simulate an AR model with 0.5 slope
+x <- arima.sim(model = list(ar=.5), n = 100)
+
+# Simulate an AR model with 0.9 slope
+y <- arima.sim(model=list(ar=.9),n=100)
+
+# Simulate an AR model with -0.75 slope
+z <- arima.sim(model=list(ar=-.75),n=100)
+
+# Plot your simulated data
+plot.ts(cbind(x, y, z))
+
+#x data shows a just a moderate amount of autocorrelation while y data shows a large amount of autocorrelation. Alternatively, z data(-ve slope) tends to oscillate considerably from one observation to the next.
+
+##################Autocorrelation for AutoRegression########################
+# Calculate the ACF for x
+acf(x)
+
+# Calculate the ACF for y
+acf(y)
+
+# Calculate the ACF for z
+acf(z)
+
+##he plots generated by the acf() command provide useful information about each lag of your time series. The first series x has positive autocorrelation for the first couple lags, but they quickly approach zero. The second series y has positive autocorrelation for many lags, but they also decay to zero. The last series z has an alternating pattern, as does its autocorrelation function (ACF), but its ACF still quickly decays to zero in magnitude.
+
+#################Random Walk vs AutoRegression Model######################
+##The random walk (RW) model is a special case of the autoregressive (AR) model, in which the slope parameter is equal to 1. RW model is not stationary and exhibits very strong persistence. Its sample autocovariance function (ACF) also decays to zero very slowly, meaning past values have a long lasting impact on current values.
+
+# The stationary AR model has a slope parameter between -1 and 1. The AR model exhibits higher persistence when its slope parameter is closer to 1, but the process reverts to its mean fairly quickly. Its sample ACF also decays to zero at a quick (geometric) rate, indicating that values far in the past have little impact on future values of the process.
+
+# Simulate and plot AR model with slope 0.9 
+x <- arima.sim(model = list(ar=.9), n = 200)
+ts.plot(x)
+acf(x)
+
+# Simulate and plot AR model with slope 0.98
+y <- arima.sim(model=list(ar=.98),n=200)
+ts.plot(y)
+acf(y)
+
+# Simulate and plot RW model
+z <- arima.sim(model=list(order=c(0,1,0)),n=200)
+ts.plot(z)
+acf(z)
+
+## the AR model represented by series y exhibits greater persistence than series x, but the ACF continues to decay to 0. By contrast, the RW model represented by series z shows considerable persistence and relatively little decay in the ACF.
+
+#######################Forecasting using AR Model#################################
+
+x <- ts(c(0.82934122,	0.45827452,	0.05278152,	0.06302386,	-0.73644893,	-0.56805492, 
+          -0.05563039,	-0.14757696,	-0.46071786,	-0.75699438,	-1.57092782,	-0.23143325, 
+          -1.26147738,	-0.73773592,	-0.75028753,	-1.92100782,	-2.47286807,	-3.55173257, 
+          -1.91249277,	-4.19513658,	-2.81785994,	-3.13869993,	-1.29584598,	-0.79640828, 
+          0.83047167,	-0.21016064,	-0.3134617,	0.05866471,	1.52705544,	3.76088847, 
+          3.25450918,	2.58562423,	1.21400134,	1.49023414,	2.3887747,	3.56561519, 
+          3.8428633,	4.9400229,	4.6846927,	3.24650595,	2.39817013,	2.10741933, 
+          1.64408812,	-0.1847806,	-1.97232159,	-0.34283939,	-2.11707044,	-2.69276747, 
+          -2.26053239,	-2.45553511,	-2.07961804,	-2.38469163,	-1.55285213,	-2.6650095, 
+          -3.95567413,	-2.09065332,	-1.69197443,	-1.30314985,	-2.69825581,	-2.09330095, 
+          -2.65812196,	-2.57208874,	-1.59851941,	-1.71253922,	-1.58704322,	-1.10272266, 
+          -1.1943978,	-1.33265837,	-0.30011772,	-0.21845395,	1.67545978,	1.19913602, 
+          1.16528149,	1.65699378,	-0.53121627,	-0.92268706,	-0.91208664,	-0.69114086, 
+          -0.51678891,	-0.81106737,	1.78528941,	3.08153265,	1.49790696,	1.81441753, 
+          2.77403381,	2.59228332,	2.43284863,	0.69862688,	-0.31540054,	-1.04872127, 
+          1.06241883,	1.69360044,	2.75453477,	1.54577888,	0.90824757,	2.49094442, 
+          1.92578525,	-0.29636244,	-0.73137478,	-1.39532217),start = 1,end=100,frequency = 1)
+
+##For a given time series x we can fit the autoregressive (AR) model using the arima() command and setting order equal to c(1, 0, 0). Note for reference that an AR model is an ARIMA(1, 0, 0) model.
+# Fit the AR model to x
+arima(x, order = c(1,0,0))
+
+# Fit the AR model to AirPassengers
+AR <-arima(AirPassengers,order=c(1,0,0))
+print(AR)
+
+# Run the following commands to plot the series and fitted values
+ts.plot(AirPassengers)
+AR_fitted <- AirPassengers - residuals(AR)
+points(AR_fitted, type = "l", col = 2, lty = 2)
+
+#########Prediction############
+
+##The predict() function can be used to make forecasts from an estimated AR model. In the object generated by your predict() command, the $pred value is the forceast, and the $se value is the standard error for the forceast.
+
+
+# Fit an AR model to Nile
+AR_fit <-arima(Nile, order  = c(1,0,0))
+print(AR_fit)
+
+# Use predict() to make a 1-step forecast
+predict_AR <- predict(AR_fit)
+
+# Obtain the 1-step forecast using $pred[1]
+predict_AR$pred[1]
+
+# Use predict to make 1-step through 10-step forecasts
+predict(AR_fit, n.ahead = 10)
+
+# Run to plot the Nile series plus the forecast and 95% prediction intervals
+ts.plot(Nile, xlim = c(1871, 1980))
+AR_forecast <- predict(AR_fit, n.ahead = 10)$pred
+AR_forecast_se <- predict(AR_fit, n.ahead = 10)$se
+points(AR_forecast, type = "l", col = 2)
+points(AR_forecast - 2*AR_forecast_se, type = "l", col = 2, lty = 2)
+points(AR_forecast + 2*AR_forecast_se, type = "l", col = 2, lty = 2)
+
+
+```
+
+##Simple Moving Average (MA) model
+```{r MA,echo=TRUE}
+
+##The simple moving average (MA) model is a parsimonious time series model used to account for very short-run autocorrelation. It does have a regression like form, but here each observation is regressed on the previous innovation, which is not actually observed. Like the autoregressive (AR) model, the MA model includes the white noise (WN) model as special case.
+
+# Generate MA model with slope 0.5
+x <- arima.sim(model = list(ma=0.5), n = 100)
+
+# Generate MA model with slope 0.9
+y <- arima.sim(model=list(ma=.9),n=100)
+
+# Generate MA model with slope -0.5
+z <- arima.sim(model=list(ma=-.5),n=100)
+
+# Plot all three models together
+plot.ts(cbind(x, y, z))
+
+## there is some very short-run persistence for the positive slope values (x and y), and the series has a tendency to alternate when the slope value is negative (z).
+
+# Calculate ACF for x
+acf(x)
+
+# Calculate ACF for y
+acf(y)
+
+# Calculate ACF for z
+acf(z)
+
+## the series x has positive sample autocorrelation at the first lag, but it is approximately zero at other lags. The series y has a larger sample autocorrelation at its first lag, but it is also approximately zero for the others. The series z has an alternating pattern, and its sample autocorrelation is negative at the first lag. However, similar to the others, it is approximately zero for all higher lags.
+
+# Fit the MA model to Nile
+MA <- arima(Nile, order = c(0,0,1))
+print(MA)
+
+# Plot Nile and MA_fit 
+ts.plot(Nile)
+MA_fit <- Nile - resid(MA)
+points(MA_fit, type = "l", col = 2, lty = 2)
+
+# Make a 1-step forecast based on MA
+predict_MA <- predict(MA)
+
+# Obtain the 1-step forecast using $pred[1]
+predict_MA$pred[1]
+
+# Make a 1-step through 10-step forecast based on MA
+predict(MA,n.ahead=10)
+
+# Plot the Nile series plus the forecast and 95% prediction intervals
+ts.plot(Nile, xlim = c(1871, 1980))
+MA_forecasts <- predict(MA, n.ahead = 10)$pred
+MA_forecast_se <- predict(MA, n.ahead = 10)$se
+points(MA_forecasts, type = "l", col = 2)
+points(MA_forecasts - 2*MA_forecast_se, type = "l", col = 2, lty = 2)
+points(MA_forecasts + 2*MA_forecast_se, type = "l", col = 2, lty = 2)
+
+```
+
+##AR vs MA Models
+
+```{r Choose Model,echo=TRUE}
+##autoregressive (AR) and simple moving average (MA) are two useful approaches to modeling time series. But how can you determine whether an AR or MA model is more appropriate in practice?
+
+##To determine model fit, you can measure the Akaike information criterion (AIC) and Bayesian information criterian (BIC) for each model.The main idea is that these indicators penalize models with more estimated parameters, to avoid overfitting, and smaller values are preferred. All factors being equal, a model that produces a lower AIC or BIC than another model is considered a better fit.
+
+##AR model for Nile data set
+AR <-arima(Nile,order=c(1,0,0))
+AR_fit <- Nile - resid(AR)
+
+# Find correlation between AR_fit and MA_fit
+cor(AR_fit, MA_fit)
+
+# Find AIC of AR
+AIC(AR)
+
+# Find AIC of MA
+AIC(MA)
+
+# Find BIC of AR
+BIC(AR)
+
+# Find BIC of MA
+BIC(MA)
+
+##Although the predictions from both models are very similar (indeed, they have a correlation coeffiicent of 0.94), both the AIC and BIC indicate that the AR model is a slightly better fit for Nile data.
+
+
+
+
+```
 
